@@ -8,14 +8,13 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 
 
-#[Layout('layouts.app')]
+#[Layout('layouts.admin')]
 
 class UserAddress extends Component
 {
-    
-        
-        
     use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
 
     public $search = '';
     public $sortField = 'created_at';

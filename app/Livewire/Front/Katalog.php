@@ -84,18 +84,16 @@ class Katalog extends Component
         ]);
     }
 
-    public function addToCart($produkId = null)
+    public function addToCart($produkId)
     {
         if (!Auth::check()) {
             return redirect()->guest('login');
         }
-    
-        $idProduk = $produkId ?? $this->product->id;
-    
+
         $cartItem = CartItem::where('user_id', Auth::id())
-                    ->where('produk_id', $idProduk)
+                    ->where('produk_id', $produkId)
                     ->first();
-    
+
          if ($cartItem) {
              $cartItem->increment('quantity');
         } else {

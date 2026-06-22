@@ -3,6 +3,7 @@
 namespace App\Livewire\Front;
 
 use Livewire\Component;
+use Livewire\Attributes\Url;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,9 @@ class Checkout extends Component
 {
     use WithPagination;
 
+    #[Url(history: true)]
     public $search = '';
+    #[Url(history: true)]
     public $statusFilter = 'all';
 
     public $showTrackingModal = false;
@@ -21,9 +24,6 @@ class Checkout extends Component
     public $selectedOrder;
     public $trackingOrder;
     public $trackingData = [];
-    
-
-    protected $queryString = ['search', 'statusFilter'];
 
     // reset pagination saat search berubah
     public function updatingSearch()

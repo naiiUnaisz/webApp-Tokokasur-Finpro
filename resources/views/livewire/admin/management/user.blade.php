@@ -1,148 +1,134 @@
-<div class="p-6">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Manajemen Pengguna </h1>
-    
-    @if (session()->has('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded-lg" role="alert">
-            {{ session('success') }}
-        </div>
-    @endif
-    
-    <div class="bg-white shadow-lg rounded-xl p-4">
-        <div class="flex justify-between items-center mb-4">
-            <div class="w-1/3">
-                <input type="text" wire:model.live="search" placeholder="Cari nama atau email pengguna..." class="form-input w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200/50">
+<div>
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-secondary rounded p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h5 class="mb-0 text-white">Manajemen Pengguna</h5>
             </div>
-        </div>
-    
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bergabung</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($users as $user)
+
+            @if (session()->has('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fa fa-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <input type="text" wire:model.live="search" placeholder="Cari nama atau email..." class="form-control bg-dark text-white border-0">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ $user->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $user->email }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    {{ $user->role === 'admin' ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800' }}">
-                                    {{ $user->role }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->created_at->format('d M Y') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                <button wire:click="editUser({{ $user->id }})" class="text-indigo-600 hover:text-indigo-900 mx-2 transition duration-150">Edit</button>
-                                <button wire:click="showUserDetail({{ $user->id }})" class="text-indigo-600 hover:text-indigo-900 mx-2 transition duration-150">Detail</button>
-                                <button wire:click="deleteUser({{ $user->id }})" class="text-red-500 hover:text-indigo-900 mx-2 transition duration-150">Delete</button>
-                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                
-                             </td>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th class="text-center">Role</th>
+                            <th>Bergabung</th>
+                            <th class="text-center">Aksi</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-gray-500">Tidak ada pengguna yang ditemukan.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    
-        <!-- Pagination -->
-        <div class="mt-4">
-            {{ $users->links() }}
+                    </thead>
+                    <tbody>
+                        @forelse ($users as $user)
+                            <tr>
+                                <td class="fw-bold">{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-{{ $user->role === 'admin' ? 'primary' : 'success' }}">
+                                        {{ $user->role }}
+                                    </span>
+                                </td>
+                                <td>{{ $user->created_at->format('d M Y') }}</td>
+                                <td class="text-center">
+                                    <button wire:click="showUserDetail({{ $user->id }})" class="btn btn-sm btn-info me-1" title="Detail">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button wire:click="editUser({{ $user->id }})" class="btn btn-sm btn-primary me-1" title="Edit">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button wire:click="deleteUser({{ $user->id }})" class="btn btn-sm btn-danger" title="Hapus">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Tidak ada pengguna ditemukan.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                {{ $users->links() }}
+            </div>
         </div>
     </div>
-    
-    <!-- Modal Detail Pengguna & Role  -->
+
+    {{-- Modal Detail --}}
     @if ($showDetailModal && $selectedUser)
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-        <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 mx-4" @click.away="$wire.showDetailModal = false">
-            <h3 class="text-2xl font-bold mb-4 text-gray-800"> Detail Pengguna: {{ $selectedUser->name }}</h3>
-            
-            <div class="border-b pb-4 mb-4">
-                <p><strong>Email:</strong> {{ $selectedUser->email }}</p>
-                <p><strong>Bergabung Sejak:</strong> {{ $selectedUser->created_at->format('d F Y') }}</p>
-            </div>
-            
-            <!-- Form Update Role -->
-            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <p class="text-sm mt-2 text-gray-500">Role saat ini: 
-                    <span class="font-bold {{ $selectedUser->role === 'admin' ? 'text-indigo-600' : 'text-green-600' }}">
-                        {{ $selectedUser->role }}
-                    </span>
-                </p>
-            </div>
-            <!-- End Form Update Role -->
-    
-            <div class="flex justify-end space-x-3 mt-6">
-                <button type="button" wire:click="$set('showDetailModal', false)" class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300 transition duration-150">Tutup</button>
+    <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,.6);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-secondary text-white">
+                <div class="modal-header border-bottom border-dark">
+                    <h5 class="modal-title text-white">Detail: {{ $selectedUser->name }}</h5>
+                    <button type="button" class="btn-close btn-close-white" wire:click="$set('showDetailModal', false)"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="bg-dark rounded p-3">
+                        <p><strong>Email:</strong> {{ $selectedUser->email }}</p>
+                        <p><strong>Bergabung:</strong> {{ $selectedUser->created_at->format('d F Y') }}</p>
+                        <p>
+                            <strong>Role:</strong>
+                            <span class="badge bg-{{ $selectedUser->role === 'admin' ? 'primary' : 'success' }}">{{ $selectedUser->role }}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-dark">
+                    <button type="button" class="btn btn-secondary" wire:click="$set('showDetailModal', false)">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
     @endif
 
+    {{-- Modal Edit --}}
     @if ($showEditModal && $selectedUser)
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-75 z-50 flex justify-center items-center">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6"
-             @click.away="$wire.showEditModal = false">
-    
-            <h3 class="text-2xl font-bold border-b pb-4 mb-4">
-                Edit Pengguna: {{ $selectedUser->name }}
-            </h3>
-    
-            <form wire:submit.prevent="updateUser">
-    
-                {{-- Nama --}}
-                <div class="mb-4">
-                    <label class="block text-sm font-medium">Nama</label>
-                    <input type="text"
-                        wire:model.defer="name"
-                        class="form-input w-full rounded-lg">
+    <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,.6);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-secondary text-white">
+                <div class="modal-header border-bottom border-dark">
+                    <h5 class="modal-title text-white">Edit: {{ $selectedUser->name }}</h5>
+                    <button type="button" class="btn-close btn-close-white" wire:click="$set('showEditModal', false)"></button>
                 </div>
-    
-                {{-- Email --}}
-                <div class="mb-4">
-                    <label class="block text-sm font-medium">Email</label>
-                    <input type="email"
-                        wire:model.defer="email"
-                        class="form-input w-full rounded-lg">
-                </div>
-    
-                {{-- Role --}}
-                <div class="mb-6">
-                    <label class="block text-sm font-medium">Role</label>
-                    <select wire:model.defer="newRole"
-                        class="form-select w-full rounded-lg">
-                        @foreach ($availableRoles as $role)
-                            <option value="{{ $role }}">{{ $role }}</option>
-                        @endforeach
-                    </select>
-                </div>
-    
-                {{-- Action --}}
-                <div class="flex justify-end space-x-3">
-                    <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg">
-                        Simpan
-                    </button>
-    
-                    <button type="button"
-                        wire:click="$set('showEditModal', false)"
-                        class="px-4 py-2 bg-gray-200 rounded-lg">
-                        Batal
-                    </button>
-                </div>
-    
-            </form>
+                <form wire:submit.prevent="updateUser">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Nama</label>
+                            <input type="text" wire:model.defer="name" class="form-control bg-dark text-white border-0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" wire:model.defer="email" class="form-control bg-dark text-white border-0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select wire:model.defer="newRole" class="form-select bg-dark text-white border-0">
+                                @foreach ($availableRoles as $role)
+                                    <option value="{{ $role }}">{{ $role }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-dark">
+                        <button type="button" class="btn btn-secondary" wire:click="$set('showEditModal', false)">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i>Simpan</button>
+                    </div>
+                </form>
+            </div>
         </div>
-     </div>
+    </div>
     @endif
 </div>

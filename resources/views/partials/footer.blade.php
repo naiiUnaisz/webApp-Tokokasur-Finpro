@@ -3,8 +3,9 @@
       <footer class="bg-[#1B1717] text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
                 <!-- Logo & Deskripsi -->
-                <div class="flex items-center justify-center
+              <div class="flex items-center justify-center
                 w-28 sm:w-32 md:w-40
                 rounded-lg p-2 shadow-md"
                  style="background-color: rgb(239, 218, 218)">

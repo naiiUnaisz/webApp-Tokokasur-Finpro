@@ -4,13 +4,16 @@ namespace App\Livewire\Admin\Shop;
 
 use Livewire\Component;
 use App\Models\OrderItem;
+use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 
 
-#[Layout('layouts.app')]
-
+#[Layout('layouts.admin')]
 class OrderItemManagement extends Component
 {
+    use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
 
     public $search = '';
 

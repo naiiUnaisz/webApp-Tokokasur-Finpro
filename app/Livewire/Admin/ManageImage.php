@@ -9,7 +9,7 @@ use Livewire\WithFileUploads;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Storage;
 
-#[Layout('layouts.app')]
+#[Layout('layouts.admin')]
 class ManageImage extends Component
 {
 

@@ -1,88 +1,87 @@
-<div class="p-6">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">Kelola Produk</h2>
-    
-    @if (session()->has('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-            <p class="font-bold">Sukses!</p>
-            <p>{{ session('success') }}</p>
+<div>
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-secondary rounded p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h5 class="mb-0 text-white">Kelola Produk</h5>
+                <button wire:click="createProduct" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus me-1"></i>Tambah Produk
+                </button>
+            </div>
+
+            @if (session()->has('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fa fa-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari produk (nama/SKU)..." class="form-control bg-dark text-white border-0">
+                </div>
+                <div class="col-md-2">
+                    <select wire:model.live="perPage" class="form-select bg-dark text-white border-0">
+                        <option value="5">5 per hal</option>
+                        <option value="10">10 per hal</option>
+                        <option value="25">25 per hal</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nama Produk</th>
+                            <th>Kategori</th>
+                            <th>Brand</th>
+                            <th>Varian</th>
+                            <th>Stok</th>
+                            <th class="text-end">Harga</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($products as $product)
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ $product->name }}</div>
+                                    <small class="text-muted">SKU: {{ $product->sku ?? '-' }}</small>
+                                </td>
+                                <td>{{ $product->kategori->name ?? '-' }}</td>
+                                <td>{{ $product->brand->name ?? '-' }}</td>
+                                <td>{{ $product->size->name ?? '-' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ $product->stock_quantity > 0 ? 'success' : 'danger' }}">
+                                        {{ $product->stock_quantity }}
+                                    </span>
+                                </td>
+                                <td class="text-end fw-bold text-info">Rp {{ number_format($product->price, 0, ',', '.') }}</td>
+                                <td class="text-center">
+                                    <button wire:click="editProduct({{ $product->id }})" class="btn btn-sm btn-info me-1" title="Edit">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button wire:click="deleteProduct({{ $product->id }})"
+                                            onclick="confirm('Yakin hapus produk ini?') || event.stopImmediatePropagation()"
+                                            class="btn btn-sm btn-danger" title="Hapus">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">Tidak ada produk ditemukan.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                {{ $products->links() }}
+            </div>
         </div>
-    @endif
-    
-    <div class="flex justify-between items-center mb-4">
-        <button wire:click="createProduct" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
-            + Tambah Produk Baru
-        </button>
-        
-        <!-- Search dan Pagination -->
-        <div class="flex space-x-3 items-center">
-           <select wire:model.live="perPage" class="border-gray-300 rounded-md shadow-sm text-sm">
-                <option value="5">5 per halaman</option>
-                <option value="10">10 per halaman</option>
-                <option value="25">25 per halaman</option>
-            </select>
-            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Produk (Nama/SKU)" class="border-gray-300 rounded-md shadow-sm w-64">
-        </div>
     </div>
-    
-    <div class="overflow-x-auto rounded-lg shadow-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nama Produk</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Kategori & Brand</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Varian </th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Harga</th>
-                    <th class="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($products as $product)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
-                        <div class="text-xs text-gray-500">SKU: {{ $product->sku ?? '-' }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <p class="font-semibold">{{ $product->kategori->name ?? 'N/A' }}</p>
-                        <p class="text-xs italic">({{ $product->brand->name ?? 'N/A' }})</p>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <p class="font-medium text-indigo-600">{{ $product->size->name ?? 'N/A' }}</p>
-                        <p class="text-xs">Stok: <span class="font-semibold">{{ $product->stock_quantity }}</span></p>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                        Rp{{ number_format($product->price, 0, ',', '.') }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <button wire:click="editProduct({{ $product->id }})" class="text-indigo-600 hover:text-indigo-900 mr-4 transition duration-150">
-                            Edit
-                        </button>
-                        
-                        <button wire:click="deleteProduct({{ $product->id }})" 
-                                 onclick="confirm('Apakah Anda yakin ingin menghapus produk ini?') || event.stopImmediatePropagation()"
-                                 class="text-red-600 hover:text-red-900 transition duration-150">
-                            Hapus
-                        </button>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-4 text-center text-gray-500 italic">
-                        Tidak ada produk ditemukan.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    
-    <!-- Pagination -->
-    <div class="mt-4">
-        {{ $products->links() }}
-    </div>
-    
+
     @include('livewire.admin.Product.editProduct')
-    
-    
-    </div>
-    
+</div>

@@ -65,7 +65,7 @@ class Keranjang extends Component
 
     public function updateQuantity($cartId, $action)
     {
-        $cartItem = CartItem::find($cartId);
+        $cartItem = CartItem::where('user_id', Auth::id())->find($cartId);
 
         if (!$cartItem) return;
 
@@ -81,7 +81,7 @@ class Keranjang extends Component
 
     public function removeItem($cartId)
     {
-        CartItem::where('id', $cartId)->delete();
+        CartItem::where('user_id', Auth::id())->where('id', $cartId)->delete();
         $this->loadCart();
     }
 }

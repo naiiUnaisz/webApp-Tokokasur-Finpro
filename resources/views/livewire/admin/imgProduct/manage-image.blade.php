@@ -1,118 +1,98 @@
+<div>
+    <div class="container-fluid pt-4 px-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h5 class="mb-0 text-white">Kelola Gambar Produk</h5>
+            <a href="{{ route('admin.imageDashboard') }}" class="btn btn-secondary btn-sm">
+                <i class="fa fa-arrow-left me-1"></i>Kembali
+            </a>
+        </div>
 
-<div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Kelola Gambar Produk</h1>
-   
-    <a href="{{ route('admin.imageDashboard') }}" class="px-4 py-2 bg-gray-500 text-white rounded-lg shadow hover:bg-gray-600 transition duration-150">
-    &larr; Kembali ke Dashboard Gambar
-    </a>
-    </div>
-    
-    {{-- Produk yang sedang dikelola --}}
-    <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
-        <h2 class="text-xl font-semibold text-indigo-700">Produk: {{ $product->name }}</h2>
-        <p class="text-sm text-gray-500">ID Produk: {{ $product->id }}</p>
-    </div>
-    
-    {{-- upload image --}}
-    <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
-        <h3 class="text-lg font-semibold mb-4 text-gray-800">Unggah Gambar Baru</h3>
-        <form wire:submit.prevent="uploadImages">
-            <div class="mb-4">
-                <label for="images" class="block text-sm font-medium text-gray-700">Pilih File Gambar (Maks 5 file)</label>
-                <input type="file" wire:model="images" id="images" multiple 
-                       class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2 
-                              focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                
-                @error('images') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-                @error('images.*') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
-            
-        {{-- input Alt Text --}}
-            <div class="mb-4">
-                <label for="alt_text" class="block text-sm font-medium text-gray-700">Teks Alternatif (Alt Text)</label>
-                <input type="text" wire:model.defer="alt_text" id="alt_text" placeholder="Deskripsi singkat gambar untuk SEO"
-                       class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2 
-                              focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                @error('alt_text') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
-    
-            {{-- preview gambar --}}
-            @if ($images)
-                <div class="mt-4 mb-4 flex space-x-3 overflow-x-auto p-2 border border-dashed rounded-lg">
-                    @foreach ($images as $image)
-                        <div class="relative w-24 h-24 flex-shrink-0">
-                            <img src="{{ $image->temporaryUrl() }}" class="w-full h-full object-cover rounded-md" alt="Preview Gambar">
+        <div class="bg-secondary rounded p-4 mb-4">
+            <h6 class="text-primary mb-1">{{ $product->name }}</h6>
+            <small class="text-muted">ID Produk: {{ $product->id }}</small>
+        </div>
+
+        <div class="bg-secondary rounded p-4 mb-4">
+            <h6 class="text-white mb-3">Unggah Gambar Baru</h6>
+            <form wire:submit.prevent="uploadImages">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Pilih File (maks 5)</label>
+                        <input type="file" wire:model="images" id="images" multiple class="form-control bg-dark text-white border-0">
+                        @error('images') <small class="text-danger">{{ $message }}</small> @enderror
+                        @error('images.*') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Alt Text (SEO)</label>
+                        <input type="text" wire:model.defer="alt_text" class="form-control bg-dark text-white border-0" placeholder="Deskripsi singkat gambar">
+                        @error('alt_text') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                </div>
+
+                @if ($images)
+                    <div class="mt-3 d-flex gap-2 flex-wrap p-2 border border-dark rounded">
+                        @foreach ($images as $image)
+                            <div style="width:80px;height:80px;">
+                                <img src="{{ $image->temporaryUrl() }}" class="w-100 h-100 rounded" style="object-fit:cover;">
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <button type="submit" class="btn btn-primary mt-3" wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="images"><i class="fa fa-upload me-1"></i>Unggah & Simpan</span>
+                    <span wire:loading wire:target="images">Mengunggah...</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-secondary rounded p-4">
+            <h6 class="text-white mb-3">Gambar Tersimpan ({{ $productImages->count() }})</h6>
+            @if ($productImages->isEmpty())
+                <p class="text-muted mb-0">Belum ada gambar. Silakan unggah di atas.</p>
+            @else
+                <div class="row g-3">
+                    @foreach ($productImages as $image)
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <div class="position-relative bg-dark rounded overflow-hidden" style="height:140px;">
+                                <img src="{{ Storage::url($image->image_url) }}" alt="{{ $image->alt_text ?: $product->name }}" class="w-100 h-100" style="object-fit:cover;">
+                                @if ($image->is_primary)
+                                    <span class="position-absolute top-0 start-0 badge bg-success m-1">UTAMA</span>
+                                @endif
+                                <div class="position-absolute bottom-0 start-0 end-0 p-1 text-center" style="background:rgba(0,0,0,.6);">
+                                    @if (!$image->is_primary)
+                                        <button wire:click="setMainImage({{ $image->id }})" class="btn btn-sm btn-primary me-1" title="Jadikan Utama">
+                                            <i class="fa fa-star"></i>
+                                        </button>
+                                    @endif
+                                    <button wire:click="confirmImageDeletion({{ $image->id }})" class="btn btn-sm btn-danger" title="Hapus">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     @endforeach
                 </div>
             @endif
-    
-            <button type="submit" 
-                    class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150"
-                    wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="images">Unggah & Simpan</span>
-                <span wire:loading wire:target="images">Mengunggah...</span>
-            </button>
-        </form>
+        </div>
     </div>
-    
-    {{-- gaambar yang tersimpan --}}
-    <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold mb-4 text-gray-800">Gambar yang Sudah Tersimpan ({{ $productImages->count() }})</h3>
-    
-        @if ($productImages->isEmpty())
-            <p class="text-gray-500 italic">Belum ada gambar untuk produk ini. Silakan unggah di atas.</p>
-        @else
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                @foreach ($productImages as $image)
-                    <div class="relative group bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition duration-300">
-                        <img src="{{ Storage::url($image->image_url) }}" alt="{{ $image->alt_text ?: $product->name . ' Gambar' }}" 
-                             class="w-full h-40 object-cover">
-                        
-                      {{-- gambar utama --}}
-                        @if ($image->is_primary)
-                            <span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">UTAMA</span>
-                        @endif
-    
-                        <div x-data="{ hover: false }"
-                        @mouseenter="hover = true"
-                        @mouseleave="hover = false"
-                        class="absolute inset-0  bg-opacity-40 flex flex-col items-center justify-center transition-opacity duration-300"
-                        :class="hover ? 'opacity-100' : 'opacity-0'">
-                            @if (!$image->is_primary)
-                                <button type="button" wire:click="setMainImage({{ $image->id }})" 
-                                        class="text-white bg-indigo-500 hover:bg-indigo-600 text-xs px-3 py-1 rounded-full mb-2 transition duration-150">
-                                    Jadikan Utama
-                                </button>
-                            @endif
-                            
-                            <button type="button" wire:click="confirmImageDeletion({{ $image->id }})" 
-                                    class="text-white bg-red-600 hover:bg-red-700 text-xs px-3 py-1 rounded-full transition duration-150">
-                                Hapus
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
-    
-    {{-- Modal Konfirmasi Hapus Gambar --}}
+
     @if ($isDeleting)
-        <div class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-            <div class="relative p-8 bg-white w-full max-w-md m-auto flex-col flex rounded-lg shadow-2xl">
-                <div class="text-center">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">Konfirmasi Hapus Gambar</h3>
-                    <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus gambar ini?</p>
+    <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,.6);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-secondary text-white">
+                <div class="modal-header border-bottom border-dark">
+                    <h5 class="modal-title text-white">Konfirmasi Hapus</h5>
                 </div>
-                <div class="flex justify-around space-x-4">
-                    <button wire:click="cancelImageDeletion" class="w-full px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition">Batal</button>
-                    <button wire:click="deleteImage" class="w-full px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">Ya, Hapus</button>
+                <div class="modal-body">
+                    <p>Yakin ingin menghapus gambar ini?</p>
+                </div>
+                <div class="modal-footer border-top border-dark">
+                    <button wire:click="cancelImageDeletion" class="btn btn-secondary">Batal</button>
+                    <button wire:click="deleteImage" class="btn btn-danger"><i class="fa fa-trash me-1"></i>Ya, Hapus</button>
                 </div>
             </div>
         </div>
-    @endif
-    
-    
     </div>
+    @endif
+</div>

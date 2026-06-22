@@ -46,28 +46,31 @@ class Wislist extends Component
     }
 
 
-    public function addToCart($produkId = null)
+    public function addToCart($produkId)
 {
     if (!Auth::check()) {
         return redirect()->guest('login');
     }
 
-    $idProduk = $produkId ?? $this->product->id;
-
     $cartItem = CartItem::where('user_id', Auth::id())
-                ->where('produk_id', $idProduk)
+                ->where('produk_id', $produkId)
                 ->first();
 
     if ($cartItem) {
         $cartItem->quantity += 1;
         $cartItem->save();
+        $this->dispatch('cartUpdated');
+        session()->flash('success', 'Produk berhasil ditambahkan ke keranjang');
         return;
     }
 
     CartItem::create([
         'user_id' => Auth::id(),
-        'produk_id' => $idProduk,
+        'produk_id' => $produkId,
         'quantity' => 1
     ]);
+
+    $this->dispatch('cartUpdated');
+    session()->flash('success', 'Produk berhasil ditambahkan ke keranjang');
 }
 }

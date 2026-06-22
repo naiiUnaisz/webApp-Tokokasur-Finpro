@@ -11,7 +11,7 @@ use App\Models\Wishlist;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
 
-#[Layout('layouts.LandingPage')]
+#[Layout('layouts.landingPage')]
 
 class DetailProduct extends Component
 {
@@ -130,9 +130,9 @@ public function addToCart($produkId = null)
     if ($cartItem) {
         $cartItem->quantity += $this->quantity;
         $cartItem->save();
-        return;
 
-        $this->dispatch('cartUpdated'); 
+        $this->dispatch('cartUpdated');
+        session()->flash('success', 'Produk berhasil ditambahkan ke keranjang');
         return;
     }
 

@@ -3,7 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Brand;
-use App\Models\Size;;
+use App\Models\Size;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Kategori;
@@ -13,7 +13,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 
 
-#[Layout('layouts.app')]
+#[Layout('layouts.admin')]
 class ManageProducts extends Component
 {
     use WithPagination;
@@ -44,7 +44,7 @@ class ManageProducts extends Component
     public $search = '';
     public $perPage = 10;
     
-    protected $paginationTheme = 'tailwind';
+    protected $paginationTheme = 'bootstrap';
 
     // Aturan Validasi
     protected function rules()
@@ -188,9 +188,11 @@ class ManageProducts extends Component
     public function render()
     {
         $products = Product::with(['kategori', 'brand', 'foamType', 'size'])
-            ->where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
-            ->orWhere('sku', 'like', '%' . $this->search . '%')
+            ->where(function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
+                    ->orWhere('sku', 'like', '%' . $this->search . '%');
+            })
             ->orderBy('id', 'desc')
             ->paginate($this->perPage);
 

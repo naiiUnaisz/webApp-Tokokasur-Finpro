@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Layout;
 
-#[Layout('layouts.app')]
+#[Layout('layouts.admin')]
 
 class ManageKategori extends Component
 {

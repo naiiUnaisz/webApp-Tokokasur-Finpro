@@ -7,11 +7,13 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 
-#[Layout('layouts.app')]
+#[Layout('layouts.admin')]
 class User extends Component
 {
     
     use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
 
     public $search = '';
     public $sortField = 'created_at';

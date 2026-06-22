@@ -8,7 +8,8 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 
 
-#[Layout('layouts.app')]
+#[Layout('layouts.admin')]
+
 class ProductImageDashboard extends Component
 {
     public function render()
@@ -25,6 +26,8 @@ class ProductImageDashboard extends Component
     }
 
     use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
 
     public $search = '';
 

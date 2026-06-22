@@ -5,7 +5,9 @@ use App\Livewire\Admin\ManageImage;
 use App\Livewire\Admin\ManageSizes;
 use App\Livewire\Admin\ManageBrands;
 use App\Livewire\Admin\ManageVariant;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\ManageKategori;
 use App\Livewire\Admin\ManageProducts;
 use App\Livewire\Admin\ManageJenisBusa;
@@ -33,6 +35,9 @@ use function Termwind\render;
 // });
 
 Route::get('/dashboard', function () {
+    if (Auth::user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -44,12 +49,13 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
 });
 
 // Route Admin
 Route::middleware(['auth', 'admin'])->prefix('admin')->as('admin.')->group(function () {
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/kategori', ManageKategori::class)->name('categories');
     Route::get('/brands', ManageBrands::class)->name('brands');
     Route::get('/FoamType', ManageJenisBusa::class)->name('foam-types');

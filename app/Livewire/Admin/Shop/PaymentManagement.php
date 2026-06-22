@@ -8,11 +8,12 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 
 
-#[Layout('layouts.app')]
-
+#[Layout('layouts.admin')]
 class PaymentManagement extends Component
 {
     use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
 
     // Properti untuk Pencarian dan Filter
     public $search = '';

@@ -5,6 +5,7 @@ namespace App\Livewire\Component;
 use Livewire\Component;
 use App\Models\CartItem;
 use App\Models\Wishlist;
+use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Auth;
 
 class HeaderLandingpage extends Component
@@ -13,10 +14,8 @@ class HeaderLandingpage extends Component
     public $cartCount = 0;
     public $wishlistCount = 0;
 
-    protected $listeners = [
-        'cartUpdated' => 'loadCounts',
-        'wishlistUpdated' => 'loadCounts',
-    ];
+    #[On('cartUpdated')]
+    #[On('wishlistUpdated')]
 
     public function mount()
     {

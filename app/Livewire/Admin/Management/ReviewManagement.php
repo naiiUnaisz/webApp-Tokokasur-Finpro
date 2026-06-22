@@ -2,26 +2,26 @@
 
 namespace App\Livewire\Admin\Management;
 
-use id;
 use App\Models\Review;
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
-use Illuminate\Container\Attributes\Auth;
 
-
-#[Layout('layouts.app')]
-
+#[Layout('layouts.admin')]
 class ReviewManagement extends Component
 {
     use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
     
     // Properti untuk Pencarian dan Filter
+    #[Url(history: true)]
     public $search = '';
+    #[Url(history: true)]
     public $statusFilter = 'all'; 
+    #[Url(history: true)]
     public $starFilter = 'all'; 
-    
-    protected $queryString = ['search', 'statusFilter', 'starFilter'];
 
     public function render()
     {
@@ -71,7 +71,7 @@ class ReviewManagement extends Component
             $review->is_approved = $isApproved;
             
             if ($isApproved) {
-                $review->approved_byadmin_id = 3; 
+                $review->approved_byadmin_id = Auth::id(); 
                 $message = 'Disetujui';
             } else {
                 $review->approved_byadmin_id = null;
